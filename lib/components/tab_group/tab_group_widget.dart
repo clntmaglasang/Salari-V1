@@ -17,6 +17,8 @@ class TabGroupWidget extends StatefulWidget {
     String? label5,
     bool? label5Present,
     String? label1,
+    int? selectedIndex,
+    this.onTabChanged,
   })  : this.label2 = label2 ?? 'Register',
         this.label2Present = label2Present ?? true,
         this.label3 = label3 ?? 'Reports',
@@ -25,7 +27,8 @@ class TabGroupWidget extends StatefulWidget {
         this.label4Present = label4Present ?? false,
         this.label5 = label5 ?? '',
         this.label5Present = label5Present ?? false,
-        this.label1 = label1 ?? 'Login';
+        this.label1 = label1 ?? 'Login',
+        this.selectedIndex = selectedIndex ?? 0;
 
   final String label2;
   final bool label2Present;
@@ -36,6 +39,8 @@ class TabGroupWidget extends StatefulWidget {
   final String label5;
   final bool label5Present;
   final String label1;
+  final int selectedIndex;
+  final void Function(int)? onTabChanged;
 
   @override
   State<TabGroupWidget> createState() => _TabGroupWidgetState();
@@ -59,12 +64,21 @@ class _TabGroupWidgetState extends State<TabGroupWidget> {
   @override
   void dispose() {
     _model.maybeDispose();
-
     super.dispose();
+  }
+
+  List<String> get _presentLabels {
+    final labels = [widget.label1];
+    if (widget.label2Present) labels.add(widget.label2);
+    if (widget.label3Present) labels.add(widget.label3);
+    if (widget.label4Present) labels.add(widget.label4);
+    if (widget.label5Present) labels.add(widget.label5);
+    return labels;
   }
 
   @override
   Widget build(BuildContext context) {
+    final labels = _presentLabels;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.0),
@@ -80,88 +94,22 @@ class _TabGroupWidgetState extends State<TabGroupWidget> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
+          children: labels.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final label = entry.value;
+            return Expanded(
               flex: 1,
-              child: wrapWithModel(
-                model: _model.tabItemModel1,
-                updateCallback: () => safeSetState(() {}),
+              child: GestureDetector(
+                onTap: widget.onTabChanged != null
+                    ? () => widget.onTabChanged!(idx)
+                    : null,
                 child: TabItemWidget(
-                  label: valueOrDefault<String>(
-                    widget.label1,
-                    'Login',
-                  ),
-                  selected: true,
+                  label: label,
+                  selected: widget.selectedIndex == idx,
                 ),
               ),
-            ),
-            if (valueOrDefault<bool>(
-              widget.label2Present,
-              true,
-            ))
-              Expanded(
-                flex: 1,
-                child: wrapWithModel(
-                  model: _model.tabItemModel2,
-                  updateCallback: () => safeSetState(() {}),
-                  child: TabItemWidget(
-                    label: valueOrDefault<String>(
-                      widget.label2,
-                      'Register',
-                    ),
-                    selected: false,
-                  ),
-                ),
-              ),
-            if (valueOrDefault<bool>(
-              widget.label3Present,
-              true,
-            ))
-              Expanded(
-                flex: 1,
-                child: wrapWithModel(
-                  model: _model.tabItemModel3,
-                  updateCallback: () => safeSetState(() {}),
-                  child: TabItemWidget(
-                    label: valueOrDefault<String>(
-                      widget.label3,
-                      'Reports',
-                    ),
-                    selected: false,
-                  ),
-                ),
-              ),
-            if (valueOrDefault<bool>(
-              widget.label4Present,
-              false,
-            ))
-              Expanded(
-                flex: 1,
-                child: wrapWithModel(
-                  model: _model.tabItemModel4,
-                  updateCallback: () => safeSetState(() {}),
-                  child: TabItemWidget(
-                    label: widget.label4,
-                    selected: false,
-                  ),
-                ),
-              ),
-            if (valueOrDefault<bool>(
-              widget.label5Present,
-              false,
-            ))
-              Expanded(
-                flex: 1,
-                child: wrapWithModel(
-                  model: _model.tabItemModel5,
-                  updateCallback: () => safeSetState(() {}),
-                  child: TabItemWidget(
-                    label: widget.label5,
-                    selected: false,
-                  ),
-                ),
-              ),
-          ].divide(SizedBox(width: 0.0)),
+            );
+          }).toList(),
         ),
       ),
     );

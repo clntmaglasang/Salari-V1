@@ -12,9 +12,8 @@ void main() async {
 
   await FlutterFlowTheme.initialize();
   
-  // Initialize authentication service
   final appState = AppStateNotifier.instance;
-  //await appState.initializeAuth();
+  await appState.initializeAuth();
 
   runApp(MyApp());
 }

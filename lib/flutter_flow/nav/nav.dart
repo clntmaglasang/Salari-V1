@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
+import '/services/local_auth_service.dart';
 
 import '/index.dart';
 
@@ -21,6 +22,21 @@ class AppStateNotifier extends ChangeNotifier {
   static AppStateNotifier get instance => _instance ??= AppStateNotifier._();
 
   bool showSplashImage = true;
+  bool _isLoggedIn = false;
+
+  bool get isLoggedIn => _isLoggedIn;
+
+  Future<void> initializeAuth() async {
+    final auth = LocalAuthService();
+    await auth.initialize();
+    _isLoggedIn = auth.isLoggedIn;
+    notifyListeners();
+  }
+
+  void setLoggedIn(bool value) {
+    _isLoggedIn = value;
+    notifyListeners();
+  }
 
   void stopShowingSplashImage() {
     showSplashImage = false;
@@ -34,6 +50,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) => OnboardingTutorialWidget(),
+      redirect: (context, state) {
+        final isLoggedIn = appStateNotifier.isLoggedIn;
+        final onAuthPage = state.uri.path == AuthPortalWidget.routePath;
+        final onDashboard = state.uri.path == MainDashboardWidget.routePath;
+        if (isLoggedIn && (onAuthPage || state.uri.path == '/')) {
+          return MainDashboardWidget.routePath;
+        }
+        if (!isLoggedIn && onDashboard) {
+          return AuthPortalWidget.routePath;
+        }
+        return null;
+      },
       routes: [
         FFRoute(
           name: '_initialize',
