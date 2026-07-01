@@ -14,7 +14,7 @@ void main() async {
   
   // Initialize authentication service
   final appState = AppStateNotifier.instance;
-  await appState.initializeAuth();
+  //await appState.initializeAuth();
 
   runApp(MyApp());
 }
