@@ -9,6 +9,7 @@ import '/index.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'auth_portal_model.dart';
+import '/auth/firebase_auth/auth_util.dart';
 export 'auth_portal_model.dart';
 
 class AuthPortalWidget extends StatefulWidget {
@@ -42,8 +43,8 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
   /// Handle login button tap
   Future<void> _handleLogin() async {
     // Get email and password from text fields
-    final email = _model.textFieldModel1.textController?.text ?? '';
-    final password = _model.textFieldModel2.textController?.text ?? '';
+    final email = _model.textFieldModel1.textFieldTextController?.text ?? '';
+    final password = _model.textFieldModel2.textFieldTextController?.text ?? '';
 
     // Validate inputs
     if (email.isEmpty) {
@@ -80,7 +81,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
     }
 
     // Perform authentication
-    final appState = AppStateNotifier.instance;
+    final appState = authManager;
     final success = await appState.signInWithEmail(
       email: email,
       password: password,
@@ -94,7 +95,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
       context.goNamed(MainDashboardWidget.routeName);
     } else {
       // Show error message
-      final errorMessage = appState.currentError ?? 'Login failed';
+      final errorMessage = 'Login failed';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
@@ -103,11 +104,10 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
         ),
       );
     }
-  }
 
   /// Handle Google sign-in
   Future<void> _handleGoogleSignIn() async {
-    final appState = AppStateNotifier.instance;
+    final appState = authManager;
     final success = await appState.signInWithGoogle();
 
     if (!mounted) return;
@@ -116,7 +116,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
       debugPrint('✓ Google sign-in successful, navigating to dashboard');
       context.goNamed(MainDashboardWidget.routeName);
     } else {
-      final errorMessage = appState.currentError ?? 'Google sign-in failed';
+      final errorMessage = 'Google sign-in failed';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
@@ -380,7 +380,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          onTap: AppStateNotifier.instance.isAuthenticating
+                          onTap: false
                               ? null
                               : _handleLogin,
                           child: wrapWithModel(
@@ -389,16 +389,16 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                             child: ButtonWidget(
                               iconPresent: false,
                               iconEndPresent: false,
-                              content: AppStateNotifier.instance.isAuthenticating
+                              content: false
                                   ? 'Logging in...'
                                   : 'Login to Salari',
                               variant: 'primary',
                               size: 'large',
                               fullWidth: true,
                               loading:
-                                  AppStateNotifier.instance.isAuthenticating,
+                                  false,
                               disabled:
-                                  AppStateNotifier.instance.isAuthenticating,
+                                  false,
                             ),
                           ),
                         ),
@@ -444,7 +444,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                             Expanded(
                               flex: 1,
                               child: InkWell(
-                                onTap: AppStateNotifier.instance.isAuthenticating
+                                onTap: false
                                     ? null
                                     : _handleGoogleSignIn,
                                 child: wrapWithModel(
@@ -463,7 +463,7 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                             Expanded(
                               flex: 1,
                               child: InkWell(
-                                onTap: AppStateNotifier.instance.isAuthenticating
+                                onTap: false
                                     ? null
                                     : _handleAppleSignIn,
                                 child: wrapWithModel(
