@@ -8,7 +8,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/index.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'initial_setup_model.dart';
 export 'initial_setup_model.dart';
@@ -64,11 +64,10 @@ class _InitialSetupWidgetState extends State<InitialSetupWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.network(
-                      'https://cdn.simpleicons.org/stmicroelectronics/6366f1.svg',
-                      width: 32.0,
-                      height: 32.0,
-                      fit: BoxFit.contain,
+                    Icon(
+                      Icons.account_balance_wallet,
+                      size: 32.0,
+                      color: FlutterFlowTheme.of(context).primary,
                     ),
                     wrapWithModel(
                       model: _model.buttonModel1,

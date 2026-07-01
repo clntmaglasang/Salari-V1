@@ -1,7 +1,7 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'social_button_model.dart';
 export 'social_button_model.dart';
@@ -22,6 +22,16 @@ class SocialButtonWidget extends StatefulWidget {
 
   @override
   State<SocialButtonWidget> createState() => _SocialButtonWidgetState();
+}
+
+IconData _iconForSlug(String slug) {
+  final lower = slug.toLowerCase();
+  if (lower.contains('apple')) return FontAwesomeIcons.apple;
+  if (lower.contains('google')) return FontAwesomeIcons.google;
+  if (lower.contains('facebook')) return FontAwesomeIcons.facebook;
+  if (lower.contains('twitter') || lower.contains('x.com')) return FontAwesomeIcons.xTwitter;
+  if (lower.contains('github')) return FontAwesomeIcons.github;
+  return FontAwesomeIcons.rightToBracket;
 }
 
 class _SocialButtonWidgetState extends State<SocialButtonWidget> {
@@ -65,14 +75,10 @@ class _SocialButtonWidgetState extends State<SocialButtonWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.network(
-                valueOrDefault<String>(
-                  widget.iconSlug,
-                  'https://cdn.simpleicons.org/google.svg',
-                ),
-                width: 20.0,
-                height: 20.0,
-                fit: BoxFit.contain,
+              FaIcon(
+                _iconForSlug(widget.iconSlug),
+                size: 20.0,
+                color: widget.brandColor,
               ),
               Text(
                 valueOrDefault<String>(
