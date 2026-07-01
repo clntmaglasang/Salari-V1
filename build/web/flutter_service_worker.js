@@ -15,7 +15,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "cf5feb2b78f1c9a63b0c9f11885bfdf0
 "assets/assets/pdfs/favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "assets/assets/rive_animations/favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "assets/assets/videos/favicon.png": "5dcef449791fa27946b3d35ad8803796",
-"assets/fonts/MaterialIcons-Regular.otf": "af81d17d6c9971107e27c2994b3e1273",
+"assets/fonts/MaterialIcons-Regular.otf": "6b56d2eb274a364b9e7248060eb4765c",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "825e75415ebd366b740bb49659d7a5c6",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-brands-400.ttf": "e92971323a6bff9dd75a0a5fbfd32962",
 "assets/packages/font_awesome_flutter/lib/fonts/fa-regular-400.ttf": "f3307f62ddff94d2cd8b103daf8d1b0f",
@@ -37,7 +37,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "cf5feb2b78f1c9a63b0c9f11885bfdf0
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "index.html": "e0f40cc0d14b84477bcc87e33db8ddcf",
 "/": "e0f40cc0d14b84477bcc87e33db8ddcf",
-"main.dart.js": "01f64dff83bffe14da67a39bfb1482c5",
+"main.dart.js": "7b443be12159a3b4d6db723699947ebc",
 "version.json": "801eb963c423b96960b62a918364efba"};
 // The application shell files that are downloaded before a service worker can
 // start.

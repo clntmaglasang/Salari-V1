@@ -1038,8 +1038,6 @@ file:///home/runner/workspace/lib/components/bottom_nav_child2/bottom_nav_child2
 file:///home/runner/workspace/lib/components/bottom_nav_child2/bottom_nav_child2_widget.dart
 file:///home/runner/workspace/lib/components/bottom_nav_child3/bottom_nav_child3_model.dart
 file:///home/runner/workspace/lib/components/bottom_nav_child3/bottom_nav_child3_widget.dart
-file:///home/runner/workspace/lib/components/bottom_nav_child4/bottom_nav_child4_model.dart
-file:///home/runner/workspace/lib/components/bottom_nav_child4/bottom_nav_child4_widget.dart
 file:///home/runner/workspace/lib/components/bottom_nav_child5/bottom_nav_child5_model.dart
 file:///home/runner/workspace/lib/components/bottom_nav_child5/bottom_nav_child5_widget.dart
 file:///home/runner/workspace/lib/components/bottom_nav_child6/bottom_nav_child6_model.dart
@@ -1131,6 +1129,7 @@ file:///home/runner/workspace/lib/pages/onboarding_tutorial/onboarding_tutorial_
 file:///home/runner/workspace/lib/pages/onboarding_tutorial/onboarding_tutorial_widget.dart
 file:///home/runner/workspace/lib/pages/transaction_ledger/transaction_ledger_model.dart
 file:///home/runner/workspace/lib/pages/transaction_ledger/transaction_ledger_widget.dart
+file:///home/runner/workspace/lib/services/ai_coach_service.dart
 file:///home/runner/workspace/lib/services/local_auth_service.dart
 file:///nix/store/i07crp4mg1rimd97s1byrq4gasg7dsk5-flutter-wrapped-3.32.0-sdk-links/bin/cache/flutter_web_sdk/kernel/dart2js_platform.dill
 file:///nix/store/i07crp4mg1rimd97s1byrq4gasg7dsk5-flutter-wrapped-3.32.0-sdk-links/packages/flutter/lib/animation.dart
