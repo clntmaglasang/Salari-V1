@@ -86,8 +86,87 @@ class _PieChartWidgetState extends State<PieChartWidget> {
     super.dispose();
   }
 
+  /// Helper function to parse comma-separated data string into list of doubles
+  List<double> _parseDataValues(String dataString) {
+    return dataString
+        .split(',')
+        .map((value) => double.tryParse(value.trim()) ?? 0.0)
+        .toList();
+  }
+
+  /// Helper function to get chart dimensions based on size parameter
+  double _getChartDimension(String sizeString) {
+    switch (sizeString) {
+      case 'compact':
+        return 120.0;
+      case 'large':
+        return 200.0;
+      case 'expanded':
+        return double.infinity;
+      default:
+        return 156.0;
+    }
+  }
+
+  /// Helper function to get section spacing based on gap parameter
+  double _getSectionsSpace(String gapString) {
+    switch (gapString) {
+      case 'none':
+        return 0.0;
+      case 'tight':
+        return 2.0;
+      case 'wide':
+        return 8.0;
+      default:
+        return 4.0;
+    }
+  }
+
+  /// Helper function to determine if donut variant should be displayed
+  bool _isDonutVariant(String variantString) {
+    return variantString != 'pie';
+  }
+
+  /// Helper function to determine if pie variant should be displayed
+  bool _isPieVariant(String variantString) {
+    return variantString == 'pie';
+  }
+
+  /// Helper function to determine if legend should be shown on right
+  bool _isLegendRight(String legendString) {
+    return legendString == 'right';
+  }
+
+  /// Helper function to determine if legend should be shown on bottom
+  bool _isLegendBottom(String legendString) {
+    return legendString != 'right' && legendString != 'hidden';
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Normalize all widget parameters into guaranteed non-null local variables
+    final centerValue = widget.centerValue;
+    final centerValuePresent = widget.centerValuePresent;
+    final centerLabel = widget.centerLabel;
+    final centerLabelPresent = widget.centerLabelPresent;
+    final dataString = widget.data;
+    final labelsString = widget.labels;
+    final colorsString = widget.colors;
+    final variantString = widget.variant;
+    final sizeString = widget.size;
+    final legendString = widget.legend;
+    final gapString = widget.gap;
+    final startAngle = widget.startAngle;
+
+    // Pre-compute derived values
+    final dataValues = _parseDataValues(dataString);
+    final chartDimension = _getChartDimension(sizeString);
+    final sectionsSpace = _getSectionsSpace(gapString);
+    final isDonut = _isDonutVariant(variantString);
+    final isPie = _isPieVariant(variantString);
+    final showLegendRight = _isLegendRight(legendString);
+    final showLegendBottom = _isLegendBottom(legendString);
+
     final pieChartPieChartColorsList1 = [
       FlutterFlowTheme.of(context).primary,
       FlutterFlowTheme.of(context).secondary,
@@ -98,6 +177,7 @@ class _PieChartWidgetState extends State<PieChartWidget> {
       FlutterFlowTheme.of(context).secondary,
       FlutterFlowTheme.of(context).tertiary
     ];
+
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.max,
@@ -114,81 +194,14 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                 Stack(
                   alignment: AlignmentDirectional(0.0, 0.0),
                   children: [
-                    if (valueOrDefault<bool>(
-                      valueOrDefault<String>(
-                                widget.variant,
-                                'donut',
-                              ) ==
-                              'pie'
-                          ? false
-                          : true,
-                      true,
-                    ))
+                    // Donut chart variant
+                    if (isDonut)
                       Container(
-                        width: valueOrDefault<double>(
-                          () {
-                            if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'compact') {
-                              return 120.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'large') {
-                              return 200.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'expanded') {
-                              return infinity;
-                            } else {
-                              return 156.0;
-                            }
-                          }(),
-                          120.0,
-                        ),
-                        height: valueOrDefault<double>(
-                          () {
-                            if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'compact') {
-                              return 120.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'large') {
-                              return 200.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'expanded') {
-                              return infinity;
-                            } else {
-                              return 156.0;
-                            }
-                          }(),
-                          120.0,
-                        ),
+                        width: chartDimension,
+                        height: chartDimension,
                         child: FlutterFlowPieChart(
                           data: FFPieChartData(
-                            values: ((String? data) {
-                              return data
-                                  .split(',')
-                                  .map((value) =>
-                                      double.tryParse(value.trim()) ?? 0)
-                                  .toList();
-                            }(valueOrDefault<String>(
-                              widget.data,
-                              '82,18',
-                            ))),
+                            values: dataValues,
                             colors: pieChartPieChartColorsList1,
                             radius: [50.0],
                           ),
@@ -211,114 +224,19 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                         .fontStyle,
                                     lineHeight: 1.0,
                                   ),
-                          sectionsSpace: valueOrDefault<double>(
-                            () {
-                              if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'none') {
-                                return 0.0;
-                              } else if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'tight') {
-                                return 2.0;
-                              } else if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'wide') {
-                                return 8.0;
-                              } else {
-                                return 4.0;
-                              }
-                            }(),
-                            4.0,
-                          ),
-                          startDegreeOffset: valueOrDefault<double>(
-                            widget.startAngle,
-                            -90.0,
-                          ),
+                          sectionsSpace: sectionsSpace,
+                          startDegreeOffset: startAngle,
                           labelPositionOffset: 0.6,
                         ),
                       ),
-                    if (valueOrDefault<bool>(
-                      valueOrDefault<String>(
-                                widget.variant,
-                                'donut',
-                              ) ==
-                              'pie'
-                          ? true
-                          : false,
-                      false,
-                    ))
+                    // Pie chart variant
+                    if (isPie)
                       Container(
-                        width: valueOrDefault<double>(
-                          () {
-                            if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'compact') {
-                              return 120.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'large') {
-                              return 200.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'expanded') {
-                              return infinity;
-                            } else {
-                              return 156.0;
-                            }
-                          }(),
-                          120.0,
-                        ),
-                        height: valueOrDefault<double>(
-                          () {
-                            if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'compact') {
-                              return 120.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'large') {
-                              return 200.0;
-                            } else if (valueOrDefault<String>(
-                                  widget.size,
-                                  'compact',
-                                ) ==
-                                'expanded') {
-                              return infinity;
-                            } else {
-                              return 156.0;
-                            }
-                          }(),
-                          120.0,
-                        ),
+                        width: chartDimension,
+                        height: chartDimension,
                         child: FlutterFlowPieChart(
                           data: FFPieChartData(
-                            values: ((String? data) {
-                              return data
-                                  .split(',')
-                                  .map((value) =>
-                                      double.tryParse(value.trim()) ?? 0)
-                                  .toList();
-                            }(valueOrDefault<String>(
-                              widget.data,
-                              '82,18',
-                            ))),
+                            values: dataValues,
                             colors: pieChartPieChartColorsList2,
                             radius: [50.0],
                           ),
@@ -341,63 +259,21 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                         .fontStyle,
                                     lineHeight: 1.0,
                                   ),
-                          sectionsSpace: valueOrDefault<double>(
-                            () {
-                              if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'none') {
-                                return 0.0;
-                              } else if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'tight') {
-                                return 2.0;
-                              } else if (valueOrDefault<String>(
-                                    widget.gap,
-                                    'normal',
-                                  ) ==
-                                  'wide') {
-                                return 8.0;
-                              } else {
-                                return 4.0;
-                              }
-                            }(),
-                            4.0,
-                          ),
-                          startDegreeOffset: valueOrDefault<double>(
-                            widget.startAngle,
-                            -90.0,
-                          ),
+                          sectionsSpace: sectionsSpace,
+                          startDegreeOffset: startAngle,
                           labelPositionOffset: 0.6,
                         ),
                       ),
-                    if (valueOrDefault<bool>(
-                      valueOrDefault<String>(
-                                widget.variant,
-                                'donut',
-                              ) ==
-                              'pie'
-                          ? false
-                          : false,
-                      true,
-                    ))
+                    // Center value and label overlay (donut only)
+                    if (isDonut)
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (valueOrDefault<bool>(
-                            widget.centerValuePresent,
-                            true,
-                          ))
+                          if (centerValuePresent)
                             Text(
-                              valueOrDefault<String>(
-                                widget.centerValue,
-                                '82',
-                              ),
+                              centerValue,
                               textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context)
                                   .titleMedium
@@ -422,12 +298,9 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                                     lineHeight: 1.4,
                                   ),
                             ),
-                          if (valueOrDefault<bool>(
-                            widget.centerLabelPresent,
-                            false,
-                          ))
+                          if (centerLabelPresent)
                             Text(
-                              widget.centerLabel,
+                              centerLabel,
                               textAlign: TextAlign.center,
                               style: FlutterFlowTheme.of(context)
                                   .labelSmall
@@ -456,42 +329,15 @@ class _PieChartWidgetState extends State<PieChartWidget> {
                       ),
                   ],
                 ),
-                if (valueOrDefault<bool>(
-                  () {
-                    if (valueOrDefault<String>(
-                          widget.legend,
-                          'hidden',
-                        ) ==
-                        'right') {
-                      return true;
-                    } else if (valueOrDefault<String>(
-                          widget.legend,
-                          'hidden',
-                        ) ==
-                        'hidden') {
-                      return false;
-                    } else {
-                      return false;
-                    }
-                  }(),
-                  false,
-                ))
+                // Right legend
+                if (showLegendRight)
                   wrapWithModel(
                     model: _model.chartLegendModel1,
                     updateCallback: () => safeSetState(() {}),
                     child: ChartLegendWidget(
-                      data: valueOrDefault<String>(
-                        widget.data,
-                        '82,18',
-                      ),
-                      labels: valueOrDefault<String>(
-                        widget.labels,
-                        'Product,Services,Marketing,Other',
-                      ),
-                      colors: valueOrDefault<String>(
-                        widget.colors,
-                        'on_primary,on_primary/30',
-                      ),
+                      data: dataString,
+                      labels: labelsString,
+                      colors: colorsString,
                       markerSize: 8.0,
                       spacing: 6.0,
                       runSpacing: 8.0,
@@ -507,42 +353,15 @@ class _PieChartWidgetState extends State<PieChartWidget> {
               ],
             ),
           ),
-          if (valueOrDefault<bool>(
-            () {
-              if (valueOrDefault<String>(
-                    widget.legend,
-                    'hidden',
-                  ) ==
-                  'right') {
-                return false;
-              } else if (valueOrDefault<String>(
-                    widget.legend,
-                    'hidden',
-                  ) ==
-                  'hidden') {
-                return false;
-              } else {
-                return true;
-              }
-            }(),
-            false,
-          ))
+          // Bottom legend
+          if (showLegendBottom)
             wrapWithModel(
               model: _model.chartLegendModel2,
               updateCallback: () => safeSetState(() {}),
               child: ChartLegendWidget(
-                data: valueOrDefault<String>(
-                  widget.data,
-                  '82,18',
-                ),
-                labels: valueOrDefault<String>(
-                  widget.labels,
-                  'Product,Services,Marketing,Other',
-                ),
-                colors: valueOrDefault<String>(
-                  widget.colors,
-                  'on_primary,on_primary/30',
-                ),
+                data: dataString,
+                labels: labelsString,
+                colors: colorsString,
                 markerSize: 8.0,
                 spacing: 6.0,
                 runSpacing: 8.0,
