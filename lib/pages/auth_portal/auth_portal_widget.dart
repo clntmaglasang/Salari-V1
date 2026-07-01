@@ -39,6 +39,116 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
     super.dispose();
   }
 
+  /// Handle login button tap
+  Future<void> _handleLogin() async {
+    // Get email and password from text fields
+    final email = _model.textFieldModel1.textController?.text ?? '';
+    final password = _model.textFieldModel2.textController?.text ?? '';
+
+    // Validate inputs
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter your email'),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter your password'),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a valid email'),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // Perform authentication
+    final appState = AppStateNotifier.instance;
+    final success = await appState.signInWithEmail(
+      email: email,
+      password: password,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      // Navigate to dashboard on success
+      debugPrint('✓ Login successful, navigating to dashboard');
+      context.goNamed(MainDashboardWidget.routeName);
+    } else {
+      // Show error message
+      final errorMessage = appState.currentError ?? 'Login failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  /// Handle Google sign-in
+  Future<void> _handleGoogleSignIn() async {
+    final appState = AppStateNotifier.instance;
+    final success = await appState.signInWithGoogle();
+
+    if (!mounted) return;
+
+    if (success) {
+      debugPrint('✓ Google sign-in successful, navigating to dashboard');
+      context.goNamed(MainDashboardWidget.routeName);
+    } else {
+      final errorMessage = appState.currentError ?? 'Google sign-in failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  /// Handle Apple sign-in
+  Future<void> _handleAppleSignIn() async {
+    final appState = AppStateNotifier.instance;
+    final success = await appState.signInWithApple();
+
+    if (!mounted) return;
+
+    if (success) {
+      debugPrint('✓ Apple sign-in successful, navigating to dashboard');
+      context.goNamed(MainDashboardWidget.routeName);
+    } else {
+      final errorMessage = appState.currentError ?? 'Apple sign-in failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: FlutterFlowTheme.of(context).error,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -270,21 +380,25 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                           focusColor: Colors.transparent,
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
-                          onTap: () async {
-                            context.goNamed(MainDashboardWidget.routeName);
-                          },
+                          onTap: AppStateNotifier.instance.isAuthenticating
+                              ? null
+                              : _handleLogin,
                           child: wrapWithModel(
                             model: _model.buttonModel2,
                             updateCallback: () => safeSetState(() {}),
                             child: ButtonWidget(
                               iconPresent: false,
                               iconEndPresent: false,
-                              content: 'Login to Salari',
+                              content: AppStateNotifier.instance.isAuthenticating
+                                  ? 'Logging in...'
+                                  : 'Login to Salari',
                               variant: 'primary',
                               size: 'large',
                               fullWidth: true,
-                              loading: false,
-                              disabled: false,
+                              loading:
+                                  AppStateNotifier.instance.isAuthenticating,
+                              disabled:
+                                  AppStateNotifier.instance.isAuthenticating,
                             ),
                           ),
                         ),
@@ -329,29 +443,39 @@ class _AuthPortalWidgetState extends State<AuthPortalWidget> {
                           children: [
                             Expanded(
                               flex: 1,
-                              child: wrapWithModel(
-                                model: _model.socialButtonModel1,
-                                updateCallback: () => safeSetState(() {}),
-                                child: SocialButtonWidget(
-                                  brandColor:
-                                      FlutterFlowTheme.of(context).primary,
-                                  iconSlug:
-                                      'https://cdn.simpleicons.org/google.svg',
-                                  label: 'Google',
+                              child: InkWell(
+                                onTap: AppStateNotifier.instance.isAuthenticating
+                                    ? null
+                                    : _handleGoogleSignIn,
+                                child: wrapWithModel(
+                                  model: _model.socialButtonModel1,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: SocialButtonWidget(
+                                    brandColor:
+                                        FlutterFlowTheme.of(context).primary,
+                                    iconSlug:
+                                        'https://cdn.simpleicons.org/google.svg',
+                                    label: 'Google',
+                                  ),
                                 ),
                               ),
                             ),
                             Expanded(
                               flex: 1,
-                              child: wrapWithModel(
-                                model: _model.socialButtonModel2,
-                                updateCallback: () => safeSetState(() {}),
-                                child: SocialButtonWidget(
-                                  brandColor:
-                                      FlutterFlowTheme.of(context).primary,
-                                  iconSlug:
-                                      'https://cdn.simpleicons.org/apple.svg',
-                                  label: 'Apple',
+                              child: InkWell(
+                                onTap: AppStateNotifier.instance.isAuthenticating
+                                    ? null
+                                    : _handleAppleSignIn,
+                                child: wrapWithModel(
+                                  model: _model.socialButtonModel2,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: SocialButtonWidget(
+                                    brandColor:
+                                        FlutterFlowTheme.of(context).primary,
+                                    iconSlug:
+                                        'https://cdn.simpleicons.org/apple.svg',
+                                    label: 'Apple',
+                                  ),
                                 ),
                               ),
                             ),
